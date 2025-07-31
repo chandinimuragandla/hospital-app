@@ -1,0 +1,148 @@
+
+.loginContainer {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f6f9;
+  position: relative;
+  animation: fadeInPage 1.2s ease-in-out;
+}
+
+
+.imageWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+
+.backgroundImage {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  filter: brightness(50%); 
+  transition: filter 0.5s ease-in-out;
+}
+
+
+.loginBox {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  animation: slideInUp 1s ease;
+}
+
+.loginTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #003366;
+  animation: fadeIn 1s ease;
+}
+
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input Fields */
+.loginInput {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeIn 1.3s ease;
+}
+
+.loginInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+/* Button */
+.loginButton {
+  padding: 0.75rem 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  animation: fadeIn 1.5s ease;
+}
+
+.loginButton:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+
+/* Signup Link */
+.signupText {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #333;
+  animation: fadeIn 1.7s ease;
+}
+
+.signupText a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signupText a:hover {
+  text-decoration: underline;
+}
+
+
+
+@keyframes fadeInPage {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

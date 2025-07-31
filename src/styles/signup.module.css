@@ -8,17 +8,14 @@
 }
 
 .background {
+  position: relative;
   background-image: url('../assets/Hospital-Management-System.jpeg');
   background-size: cover;
   background-position: center;
-  min-height: 100vh; 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
- 
-  
+  background-repeat: no-repeat;
+  min-height: 100vh;
 }
+
 
 
 .background::before {

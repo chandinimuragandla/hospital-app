@@ -7,35 +7,48 @@
   padding: 0;
 }
 
+/* 1. Ensure full screen layout */
 .background {
   position: relative;
+  width: 100vw;            /* FULL WIDTH */
+  height: 100vh;           /* FULL HEIGHT */
   background-image: url('../assets/Hospital-Management-System.jpeg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-
-
+/* 2. Dark overlay */
 .background::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('../assets/Hospital-Management-System.jpeg');
-  background-size: cover;
-  background-position: center;
+  background: rgba(0, 0, 0, 0.6);  /* Optional dark overlay */
   z-index: -2;
-  filter: brightness(0.4); /* lower value = darker image */
 }
 
 .background::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-color: rgba(255, 255, 255, 0.1); /* make this more transparent */
+  background-color: rgba(255, 255, 255, 0.1);
   z-index: -1;
 }
+
+/* 3. Center and stretch the form */
+.centerSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+
 
 
 .header {
@@ -106,15 +119,6 @@
   margin-top: -60px;
 }
 
-.centerSection {
-  display: flex;
-  justify-content: center;     /* Horizontally center the form */
-  align-items: flex-start;     /* Align form to the top */
-  padding-top: 60px;           /* Space from top */
-  padding-bottom: 40px;
-  min-height: 100vh;           /* Full height */
-  width: 100%;
-}
 
 
 

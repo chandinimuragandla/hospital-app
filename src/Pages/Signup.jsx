@@ -75,7 +75,7 @@ const Signup = () => {
       const response = await axios.post('https://jsonplaceholder.typicode.com/posts', formData);
       setApiResponse(response.data);
       alert('Signup successful! Redirecting...');
-      setTimeout(() => navigate('/Login'), 4000);
+      setTimeout(() => navigate('/login'), 4000);
     } catch (err) {
       alert('Signup failed!');
       console.error(err);
@@ -218,7 +218,7 @@ const Signup = () => {
 
   return (
   <div className={styles.background}>
-   <header className={styles.header}>
+   {/* <header className={styles.header}>
   <div className={styles.headerLeft}>
     <h1>My Health Portal</h1>
   </div>
@@ -228,7 +228,7 @@ const Signup = () => {
     <Link to="/contact">Contact</Link>
     
   </div>
-</header>
+</header> */}
 
 
     
@@ -267,7 +267,7 @@ const Signup = () => {
 
     </div>
 
-   <footer className={styles.footer}>
+   {/* <footer className={styles.footer}>
   <div className={styles.footerContent}>
     <div className={styles.footerSection}>
       <h4>Contact Us</h4>
@@ -296,7 +296,7 @@ const Signup = () => {
   <p className={styles.copyRight}>
     &copy; {new Date().getFullYear()} Hospital Management System. All rights reserved.
   </p>
-</footer>
+</footer> */}
 
   </div>
 );

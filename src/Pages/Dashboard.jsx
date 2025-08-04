@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from '../styles/Dashboard.module.css';
 import { useAppointments } from '../context/AppointmentContext';
 import bannerImage from '../assets/das1.jpeg';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 const mockData = [
   {
@@ -58,6 +59,17 @@ const mockData = [
     phone: '+91-9012345678',
     timing: 'Daily | 8am - 12pm',
     image: 'https://cdn-icons-png.flaticon.com/512/2922/2922518.png'
+  },
+  {
+    issue: 'Back Pain',
+    doctor: 'Dr. Neha Reddy',
+    specialty: 'Orthopedic',
+    experience: '9 years',
+    hospital: 'Spine Care Hospital',
+    contact: 'ortho@hospital.com',
+    phone: '+91-9871234560',
+    timing: 'Mon - Sat | 1pm - 5pm',
+    image: 'https://cdn-icons-png.flaticon.com/512/2922/2922522.png'
   }
 ];
 
@@ -65,7 +77,7 @@ const Dashboard = () => {
   const { addAppointment } = useAppointments();
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [showWelcome, setShowWelcome] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const [theme, setTheme] = useState('light');
   const [formData, setFormData] = useState({
     appointment_date: '',
     appointment_time: '',
@@ -92,32 +104,33 @@ const Dashboard = () => {
     setFormData({ appointment_date: '', appointment_time: '', reason: '', notes: '' });
   };
 
-  return (
-    <main className={`${styles.main} ${darkMode ? styles.dark : ''}`}>
-      <div className={styles.toggleContainer}>
-        <label className={styles.toggleLabel}>
-          <input
-            type="checkbox"
-            checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
-          />
-          <span className={styles.slider}></span>
-          <span className={styles.toggleText}>{darkMode ? 'Dark' : 'Light'} Mode</span>
-        </label>
-      </div>
+  const cycleTheme = () => {
+    setTheme(prev =>
+      prev === 'light' ? 'dark' :
+      prev === 'dark' ? 'navy' : 'light'
+    );
+  };
 
+  return (
+    <main className={`${styles.main} ${styles[theme]}`}>
       {showWelcome && (
         <div className={styles.welcomePopup}>
           <p>👋 Welcome to the Dashboard</p>
         </div>
       )}
 
-      <img src={bannerImage} alt="Health banner" className={styles.bannerImage} />
-      <h2>Your Health Consultations</h2>
+      <div className={styles.themeToggle}>
+        <button onClick={cycleTheme} title="Toggle Theme">
+          {theme === 'dark' ? <FaMoon color="#fff" /> : theme === 'navy' ? <FaMoon color="#0ff" /> : <FaSun color="#f90" />}
+        </button>
+      </div>
 
-      <div className={styles.cards}>
+      <img src={bannerImage} alt="Health banner" className={styles.bannerImage} />
+      <h2 className={styles.title}>Your Health Consultations</h2>
+
+      <div className={styles.cardsGrid}>
         {mockData.map((item, index) => (
-          <div key={index} className={styles.card}>
+          <div key={index} className={`${styles.card} ${styles.fadeIn}`} style={{ animationDelay: `${index * 0.2}s` }}>
             <img src={item.image} alt={item.doctor} className={styles.avatar} />
             <h2>{item.issue}</h2>
             <p><strong>Doctor:</strong> {item.doctor}</p>
@@ -127,9 +140,7 @@ const Dashboard = () => {
             <p><strong>Contact:</strong> {item.contact}</p>
             <p><strong>Phone:</strong> {item.phone}</p>
             <p><strong>Timing:</strong> {item.timing}</p>
-            <button className={styles.bookBtn} onClick={() => setSelectedDoctor(item)}>
-              Book Appointment
-            </button>
+            <button className={styles.bookBtn} onClick={() => setSelectedDoctor(item)}>Book Appointment</button>
           </div>
         ))}
       </div>

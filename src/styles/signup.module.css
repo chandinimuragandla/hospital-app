@@ -1,293 +1,156 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
-* {
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 0;
+.signupPage {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 1. Ensure full screen layout */
-.background {
-  position: relative;
-  width: 100vw;            /* FULL WIDTH */
-  height: 100vh;           /* FULL HEIGHT */
+/* Optional marquee style */
+.marqueeBar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: #3c5281;
+  color: white;
+  padding: 8px 0;
+  text-align: center;
+  font-weight: bold;
+  z-index: 2;
+}
+
+
+.signupContainer {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  margin-top: 40px; 
+}
+
+
+.signupContainer::before {
+  content: "";
+  flex: 1;
   background-image: url('../assets/Hospital-Management-System.jpeg');
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-
-/* 2. Dark overlay */
-.background::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);  /* Optional dark overlay */
-  z-index: -2;
-}
-
-.background::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-color: rgba(255, 255, 255, 0.1);
-  z-index: -1;
-}
-
-/* 3. Center and stretch the form */
-.centerSection {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  padding: 20px;
-}
-
-
-
-.header {
-  width: 100%;
-  position: sticky;       /* keeps it stuck at top */
-  top: 0;                 /* from top of viewport */
-  z-index: 1000;          /* stays above other elements */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: rgba(103, 222, 243, 0.95);
-  padding: 15px 40px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 0 0 16px 16px;
-}
-
-
-
-
-
-.headerLeft h1 {
-  font-size: 24px;
-  color: #003366;
-  font-weight: bold;
-  margin-left: 50px;
-}
-
-.headerRight a {
-  margin-left: 25px;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.headerRight a:hover {
-  color: #0066cc;
-}
-
-
-.navLinks {
-  margin-top: 4px;
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  font-size: 14px;
- 
-}
-
-.navLinks a {
-  text-decoration: none;
-  color: #444;
-  font-weight: 500;
-
-  
-}
-
-.navLinks a:hover {
-  color: #007bff;
-  
-}
-
-.marquee-bar {
-   
-  color:#ef4805;
-  font-size: 13px;
-  padding: 4px 0;
-  margin-top: -60px;
-}
-
-
-
 
 
 .formWrapper {
-  background-color:#fff;
-  padding: 40px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 450px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.6s ease-in-out;
- 
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+
+
+  background: 
+    
+    url('../assets/hospital-background.jpg'); 
+
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
+
+
+
 .formBox {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  width: 100%;
+  max-width: 500px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px 20px;
 }
 
 .formBox h2 {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 26px;
-  color: #333;
 }
 
 
+.inputGroup {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
 
-
-form input,
-form select,
-.formBox .PhoneInput input {
-  width: 100%;
-  padding: 14px;
-  margin: 6px 0;
-  border: 1px solid #ccc;
+.inputGroup input,
+.inputGroup select {
+  padding: 12px;
+  font-size: 16px;
   border-radius: 8px;
-  font-size: 15px;
-  transition: border 0.2s ease;
+  border: 1px solid #ccc;
+  outline: none;
 }
 
-form input:focus,
-form select:focus,
-.formBox .PhoneInput input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+.inputGroup select {
+  background-color: #fff;
 }
+
+.error {
+  color: red;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
 
 .buttonGroup {
   display: flex;
   justify-content: space-between;
-  margin-top: 24px;
-  gap: 12px;
+  margin-top: 20px;
 }
 
 .buttonGroup button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  background-color: #007bff;
+  padding: 10px 20px;
+  background-color: #3c2bd8;
   color: white;
-  border-radius: 8px;
-  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s;
 }
 
 .buttonGroup button:hover {
-  background-color: #0056b3;
+  background-color: #442cad;
 }
 
-.step-success {
-  margin-top: 10px;
+/* Link text */
+.formBox p {
   text-align: center;
+  margin-top: 15px;
   font-size: 14px;
-  color: green;
-  animation: fadeIn 0.5s ease-in;
 }
 
-.api-response {
+
+.apiResponse {
   margin-top: 20px;
-  background: #e6f7e6;
+  background-color: #f1f1f1;
   padding: 15px;
   border-radius: 8px;
-  border: 1px solid #b6e6b6;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 10px;
-  background-color: rgba(103, 222, 243, 0.85);
-  text-align: center;
-  font-size: 13px;
-  color: #444;
-  height:130px;
-}
-
-
-.footerContent {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 15px;
-}
-
-.footerSection {
-  flex: 1;
-  min-width: 200px;
-}
-
-.footerSection h4 {
-  margin-bottom: 10px;
-  color: #007bff;
-  font-size: 16px;
-}
-
-.footerSection p,
-.footerSection ul,
-.footerSection li {
   font-size: 14px;
-  color: #111111;
-  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
-.footerSection ul {
-  list-style: none;
-  padding: 0;
-}
-
-.footerSection li a {
-  text-decoration: none;
-  color: #333;
-}
-
-.footerSection li a:hover {
-  color: #007bff;
-}
-
-.copyRight {
-  text-align: center;
-  font-size: 13px;
-  color: #777;
-}
-
-
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    transform: translateY(40px);
-    opacity: 0;
+/* Responsive layout */
+@media (max-width: 768px) {
+  .signupContainer {
+    flex-direction: column;
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+  .signupContainer::before {
+    display: none;
   }
-  to {
-    opacity: 1;
+
+  .formWrapper {
+    flex: unset;
+    padding: 20px;
   }
 }

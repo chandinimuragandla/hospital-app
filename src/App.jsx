@@ -1,4 +1,4 @@
-// src/App.jsx
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Login from './Pages/Login';
@@ -14,14 +14,12 @@ import MainLayout from './layouts/MainLayout';
 const App = () => {
   return (
     <Routes>
-      {/* Login routes */}
+      
       <Route path="/" element={<Login />} />
-      <Route path="/login" element={<Login />} /> {/* Added for better redirect support */}
+      <Route path="/login" element={<Login />} /> 
 
-      {/* Signup route */}
       <Route path="/signup" element={<Signup />} />
 
-      {/* Routes with sidebar layout */}
       <Route
         path="/dashboard"
         element={

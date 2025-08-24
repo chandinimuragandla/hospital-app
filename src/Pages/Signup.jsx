@@ -6,6 +6,9 @@ import 'react-phone-input-2/lib/style.css';
 import Select from 'react-select';
 import { Country, State } from 'country-state-city';
 import styles from '../styles/signup.module.css';
+import Header from "../Components/Header"; 
+
+
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -217,10 +220,18 @@ const Signup = () => {
   };
 
   return (
+    <>
+      <Header showAuthButtons={false} />  
+    
     <div className={styles.signupPage}>
-      <div className={styles.marqueeBar}>
-        <marquee>Welcome to our Hospital Management System Signup Page!</marquee>
-      </div>
+     <div className={styles.marqueeBar}>
+  <div className={styles.marqueeLeft}>
+  
+  </div>
+  <marquee className={styles.marqueeText}>
+    Welcome to our Hospital Management System Signup Page!
+  </marquee>
+</div>
 
       <div className={styles.signupContainer}>
         <div className={styles.formWrapper}>
@@ -233,7 +244,7 @@ const Signup = () => {
                 {step < 3 && <button type="button" onClick={() => validateStep() && setStep(step + 1)}>Next</button>}
                 {step === 3 && <button type="submit">Sign Up</button>}
               </div>
-              <p>Already have an account? <Link to="/">Login</Link></p>
+              <p>Already have an account? <Link to="/login">Login</Link></p>
             </form>
 
             {apiResponse && (
@@ -246,6 +257,7 @@ const Signup = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

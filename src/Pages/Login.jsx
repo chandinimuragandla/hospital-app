@@ -1,108 +1,88 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../styles/login.css";
-import bgImage from "../assets/healthcare.jpeg";
-import {
-  FaGoogle,
-  FaFacebookF,
-  FaChrome,
-  FaStar,
-  FaChevronLeft,
-  FaChevronRight,
-  FaUserCircle,
-} from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-
-const testimonials = [
-  {
-    name: "Anjali Sharma",
-    text: "The doctors were kind and attentive throughout my recovery.",
-    rating: 5,
-  },
-  {
-    name: "Rahul Verma",
-    text: "Quick response and excellent facilities. Felt safe!",
-    rating: 4,
-  },
-  {
-    name: "Priya Das",
-    text: "Clean hospital, great nurses, and good food!",
-    rating: 4,
-  },
-];
+import doctorImage from "../assets/doctor 3d.avif";
+import medecineImage from "../assets/medecine.png";
+import { useNavigate } from "react-router-dom";
+import Header from "../Components/Header";  
 
 const Login = () => {
   const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
+    if (email.trim() === "" || password.trim() === "") {
+      setError(true);
+      return;
+    }
+
+    setError(false);
     navigate("/dashboard");
   };
 
-  const nextTestimonial = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  const handleSignup = () => {
+    navigate("/signup");
   };
-
-  const prevTestimonial = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextTestimonial();
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const { name, text, rating } = testimonials[currentIndex];
 
   return (
-    <div className="login-background" style={{ backgroundImage: `url(${bgImage})` }}>
-      <div className="login-container">
-        {/* LEFT SIDE */}
+    <>
+      <Header showAuthButtons={false} /> 
+      
+      <div className="login-main-wrapper">
+        
         <div className="login-left">
-          <h2>Welcome Back!</h2>
-          <form className="login-form" onSubmit={handleLogin}>
-            <input type="email" placeholder="Email Address" required />
-            <input type="password" placeholder="Password" required />
-            <div className="actions">
-              <a href="#">Forgot Password?</a>
-            </div>
-            <button type="submit">Login</button>
-          </form>
-          <p className="signup-text">
-            Don't have an account? <Link to="/signup">Sign Up</Link>
-          </p>
-          <div className="social-icons">
-            <FaGoogle className="icon" />
-            <FaFacebookF className="icon" />
-            <FaChrome className="icon" />
+          <div className="logo-heading">
+            <i className="fas fa-heartbeat animated-icon"></i>
+            <h1>Hospital Assist</h1>
           </div>
+          <h2 className="welcome-text">
+            <span className="highlight">Welcome</span>, please enter your details.
+          </h2>
+          <img src={medecineImage} alt="Medicine" className="login-left-img" />
         </div>
 
-        {/* RIGHT SIDE - TESTIMONIALS */}
-        <div className="login-right">
-          <div className="testimonial-carousel">
-            <div className="arrow left" onClick={prevTestimonial}>
-              <FaChevronLeft />
-            </div>
-            <div className="testimonial-content">
-              <FaUserCircle className="avatar-icon" />
-              <h4>{name}</h4>
-              <p>"{text}"</p>
-              <div className="rating">
-                {[...Array(5)].map((_, i) => (
-                  <FaStar key={i} color={i < rating ? "#ffc107" : "#e4e5e9"} />
-                ))}
+       
+        <div className="login-right-content">
+          <img src={doctorImage} alt="Doctor 3D" className="doctor-img" />
+          <div className="login-form-box">
+            <h2>Login</h2>
+            <form onSubmit={handleLogin} className={error ? "shake" : ""}>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button type="submit">Login</button>
+              {error && (
+                <p className="error-message">😢 Please fill in all required fields</p>
+              )}
+            </form>
+
+            <div className="social-login">
+              <p>Or login with</p>
+              <div className="icons">
+                <i className="fab fa-google"></i>
+                <i className="fab fa-facebook-f"></i>
+                <i className="fab fa-linkedin-in"></i>
               </div>
             </div>
-            <div className="arrow right" onClick={nextTestimonial}>
-              <FaChevronRight />
-            </div>
+
+            <p className="signup-link">
+              Don’t have an account? <span onClick={handleSignup}>Sign up</span>
+            </p>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

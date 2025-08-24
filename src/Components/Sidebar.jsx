@@ -1,43 +1,65 @@
-// src/components/Sidebar.jsx
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import styles from '../styles/Sidebar.module.css';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import styles from "./Sidebar.module.css";
+import logo from "../assets/Healthassit-removebg-preview.png"; 
+import { FaBell, FaSun, FaMoon } from "react-icons/fa";
 
-const Sidebar = () => {
+const Header = () => {
   const location = useLocation();
 
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
   const navItems = [
-    { to: '/dashboard', label: 'Dashboard', icon: '🏠' },
-    { to: '/health-benefits', label: 'Health Benefits', icon: '💊' },
-    { to: '/appointments', label: 'Appointments', icon: '📅' },
-    { to: '/providers', label: 'Providers', icon: '🏥' },
-    { to: '/care-reminders', label: 'Care Reminders', icon: '⏰' },
-    { to: '/notifications', label: 'Notifications', icon: '🔔' },
-    { to: '/', label: 'Logout', icon: '🚪' }
+    { to: "/dashboard", label: "Dashboard" },
+    { to: "/health-benefits", label: "Health Benefits" },
+    { to: "/appointments", label: "Appointments" },
+    { to: "/care-reminders", label: "Care Reminders" },
+     { to: "/Login", label: "Logout" },
+   
   ];
 
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.logo}>OnePath</div>
-      <nav>
-        <ul className={styles.navList}>
-          {navItems.map(({ to, label, icon }) => (
+    <header className={styles.header}>
+      <div className={styles.logoWrap}>
+        <img src={logo} alt="Logo" className={styles.logoImage} />
+        <h1 className={styles.title}>CarePlus</h1>
+      </div>
+
+      <nav className={styles.nav}>
+        <ul>
+          {navItems.map(({ to, label }) => (
             <li key={to}>
               <Link
                 to={to}
                 className={`${styles.navLink} ${
-                  location.pathname === to ? styles.active : ''
+                  location.pathname === to ? styles.active : ""
                 }`}
               >
-                <span className={styles.icon}>{icon}</span>
-                <span>{label}</span>
+                {label}
               </Link>
             </li>
           ))}
+
+          <li className={styles.iconButton}>
+            <FaBell />
+          </li>
+
+          <li className={styles.iconButton} onClick={toggleTheme}>
+            {theme === "light" ? <FaMoon /> : <FaSun />}
+          </li>
         </ul>
       </nav>
-    </aside>
+    </header>
   );
 };
 
-export default Sidebar;
+export default Header;

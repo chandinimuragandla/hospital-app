@@ -13,7 +13,7 @@ const MyBenefits = () => {
 
   useEffect(() => {
     try {
-      setBenefits(healthData); 
+      setBenefits(healthData); // mock data
     } catch (err) {
       setError("Failed to load benefits");
     }
@@ -24,7 +24,7 @@ const MyBenefits = () => {
       setEstimate("⚠️ Please enter a valid cost");
       return;
     }
-    const coinsurance = 0.2; 
+    const coinsurance = 0.2; // Example: 20%
     const result = Number(cost) * coinsurance;
     setEstimate(`💰 Your estimated out-of-pocket: ₹${result}`);
   };
@@ -43,7 +43,7 @@ const MyBenefits = () => {
   return (
     <div className="my-benefits">
 
-     
+      {/* ✅ Banner */}
       <h1>My Health-Benefits </h1>
       <div
         className="banner"
@@ -52,7 +52,8 @@ const MyBenefits = () => {
 
       </div>
 
-    
+      {/* ✅ Benefit Summary (Left: details, Right: image) */}
+      {/* Benefit Summary (Left: details, Right: image) */}
       <div className="summary-section">
         <div className="summary-card">
           <h2>Benefit Summary</h2>
@@ -124,8 +125,56 @@ const MyBenefits = () => {
           {estimate && <p className="estimate-result">{estimate}</p>}
         </div>
       </div>
+      {/* footer */}
+      <footer className="footer">
+        <div className="footer-container">
+          <div className="footer-about">
+            <h3>HealthCare+ App</h3>
+            <p>
+              Your trusted partner in booking doctor appointments, tracking your
+              health, and staying informed. Together, let’s build a healthier tomorrow.
+            </p>
+          </div>
+
+          <div className="footer-links">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="/dashboard">🏠 Home</a></li>
+              <li><a href="/appointments">📅 Appointments</a></li>
+              <li><a href="/health-benefits">📖 Policies</a></li>
+              <li><a href="/profile">👤 My Profile</a></li>
+            </ul>
+          </div>
+
+          <div className="footer-social">
+            <h4>Follow Us</h4>
+            <div className="social-icons">
+              <a href="https://wa.me/1234567890" target="_blank" rel="noreferrer">💬 WhatsApp</a>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer">📘 Facebook</a>
+              <a href="https://t.me" target="_blank" rel="noreferrer">✈️ Telegram</a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer">💼 LinkedIn</a>
+            </div>
+          </div>
+
+          <div className="footer-contact">
+            <h4>Contact Us</h4>
+            <p>📍 Hyderabad, India</p>
+            <p>📞 +91 98765 43210</p>
+            <p>✉️ support@healthapp.com</p>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} HealthCare+ App. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
+
+    
   );
+
+
+  
 };
+  
 
 export default MyBenefits;

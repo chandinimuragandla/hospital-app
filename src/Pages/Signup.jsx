@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import Select from 'react-select';
 import { Country, State } from 'country-state-city';
 import styles from '../styles/signup.module.css';
 import Header from "../Components/Header"; 
-
-
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -21,7 +18,10 @@ const Signup = () => {
 
   useEffect(() => {
     const allCountries = Country.getAllCountries();
-    const mapped = allCountries.map(c => ({ label: c.name, value: c.isoCode }));
+    const allowed = allCountries.filter(c => 
+      c.isoCode === "IN" || c.isoCode === "US"|| c.isoCode === "GB"
+    );
+    const mapped = allowed.map(c => ({ label: c.name, value: c.isoCode }));
     setCountries(mapped);
   }, []);
 
@@ -44,7 +44,7 @@ const Signup = () => {
     const fieldsToValidate = stepFields[step];
     const newErrors = {};
     fieldsToValidate.forEach(({ name }) => {
-      if (name === 'middleName') return;
+      if (name === 'middleName') return; 
       const value = formData[name];
       if (!value || value.toString().trim() === '') {
         newErrors[name] = `${name} is required`;
@@ -61,23 +61,39 @@ const Signup = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
+
     const allValid = [1, 2, 3].every((s) => {
       setStep(s);
       return validateStep();
     });
     if (!allValid) return;
 
-    try {
-      const response = await axios.post('https://jsonplaceholder.typicode.com/posts', formData);
-      setApiResponse(response.data);
-      alert('Signup successful! Redirecting...');
-      setTimeout(() => navigate('/login'), 4000);
-    } catch (err) {
-      alert('Signup failed!');
-      console.error(err);
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const userExists = users.find((u) => u.email === formData.email);
+    if (userExists) {
+      alert("⚠️ User already exists. Please login.");
+      navigate("/login");
+      return;
     }
+
+    // 🟢 Add loginCount + appointments for new user
+    const newUser = {
+      ...formData,
+      loginCount: 0,
+      appointments: []
+    };
+
+    const updatedUsers = [...users, newUser];
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    // 🟢 Store current user for session tracking
+    localStorage.setItem("currentUserEmail", formData.email);
+
+    setApiResponse(newUser);
+    alert("✅ Signup successful! Redirecting to login...");
+    setTimeout(() => navigate("/login"), 1500);
   };
 
   const renderField = (field) => {
@@ -222,41 +238,38 @@ const Signup = () => {
   return (
     <>
       <Header showAuthButtons={false} />  
-    
-    <div className={styles.signupPage}>
-     <div className={styles.marqueeBar}>
-  <div className={styles.marqueeLeft}>
-  
-  </div>
-  <marquee className={styles.marqueeText}>
-    Welcome to our Hospital Management System Signup Page!
-  </marquee>
-</div>
+      <div className={styles.signupPage}>
+        <div className={styles.marqueeBar}>
+          <div className={styles.marqueeLeft}></div>
+          <marquee className={styles.marqueeText}>
+            Welcome to our Hospital Management System Signup Page!
+          </marquee>
+        </div>
 
-      <div className={styles.signupContainer}>
-        <div className={styles.formWrapper}>
-          <div className={styles.formBox}>
-            <h2>Create Account</h2>
-            <form onSubmit={handleSubmit}>
-              {stepFields[step].map(field => renderField(field))}
-              <div className={styles.buttonGroup}>
-                {step > 1 && <button type="button" onClick={() => setStep(step - 1)}>Back</button>}
-                {step < 3 && <button type="button" onClick={() => validateStep() && setStep(step + 1)}>Next</button>}
-                {step === 3 && <button type="submit">Sign Up</button>}
-              </div>
-              <p>Already have an account? <Link to="/login">Login</Link></p>
-            </form>
+        <div className={styles.signupContainer}>
+          <div className={styles.formWrapper}>
+            <div className={styles.formBox}>
+              <h2>Create Account</h2>
+              <form onSubmit={handleSubmit}>
+                {stepFields[step].map(field => renderField(field))}
+                <div className={styles.buttonGroup}>
+                  {step > 1 && <button type="button" onClick={() => setStep(step - 1)}>Back</button>}
+                  {step < 3 && <button type="button" onClick={() => validateStep() && setStep(step + 1)}>Next</button>}
+                  {step === 3 && <button type="submit">Sign Up</button>}
+                </div>
+                <p>Already have an account? <Link to="/login">Login</Link></p>
+              </form>
 
-            {apiResponse && (
-              <div className={styles.apiResponse}>
-                <h3>Dummy API Response:</h3>
-                <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
-              </div>
-            )}
+              {apiResponse && (
+                <div className={styles.apiResponse}>
+                  <h3>Saved User Data:</h3>
+                  <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 };

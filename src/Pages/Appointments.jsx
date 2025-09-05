@@ -2,11 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./Appointments.css";
 import axios from "axios";
 
-// Assets
-// import bookapp from "../assets/appointment.jpg";   
-import scroll1 from "../assets/scrol1.jpg";   
-import scroll2 from "../assets/scrol2.jpg";   
-
 const availableSlots = ["10:00 AM", "11:00 AM", "12:00 PM", "2:00 PM"];
 const appointmentTypes = ["Consultation", "Follow-up", "Emergency"];
 
@@ -30,6 +25,12 @@ const AppointmentsPage = () => {
         setResults(res.data);
       })
       .catch((err) => console.error("Error loading providers:", err));
+
+    // ✅ Load current user’s appointments from localStorage
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser && currentUser.appointments) {
+      setAppointments(currentUser.appointments);
+    }
   }, []);
 
   const handleSearch = (value) => {
@@ -77,9 +78,25 @@ const AppointmentsPage = () => {
       status: "Confirmed",
     };
 
-    setAppointments([...appointments, newAppt]);
-    setError("");
+    const updatedAppointments = [...appointments, newAppt];
+    setAppointments(updatedAppointments);
 
+    //  Save appointment to currentUser in localStorage
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser) {
+      currentUser.appointments = updatedAppointments;
+
+      // Update users list
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      users = users.map((u) =>
+        u.email === currentUser.email ? currentUser : u
+      );
+
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    }
+
+    setError("");
     setSelectedProvider(null);
     setSelectedDate("");
     setSelectedTime("");
@@ -88,31 +105,28 @@ const AppointmentsPage = () => {
   };
 
   const handleCancel = (id) => {
-    setAppointments(
-      appointments.map((a) =>
-        a.id === id ? { ...a, status: "Cancelled" } : a
-      )
+    const updatedAppointments = appointments.map((a) =>
+      a.id === id ? { ...a, status: "Cancelled" } : a
     );
+    setAppointments(updatedAppointments);
+
+    //  Update localStorage after cancel
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser) {
+      currentUser.appointments = updatedAppointments;
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      users = users.map((u) =>
+        u.email === currentUser.email ? currentUser : u
+      );
+
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    }
   };
 
   return (
-    <div
-      className="appointments-container"
-      // style={{
-      //   backgroundImage: `url(${bookapp})`,
-      //   backgroundSize: "cover",
-      //   backgroundPosition: "center",
-      //   minHeight: "100vh",
-      //   position: "relative",
-      //   overflow: "hidden",
-      // }}
-    >
-      
-      <img src={scroll1} alt="scroll1" className="scroll-img scroll-left" />
-
-      {/* Right Scroll (Bottom to Top) */}
-      <img src={scroll2} alt="scroll2" className="scroll-img scroll-right" />
-
+    <div className="appointments-container">
       <h2>Appointments Page</h2>
 
       {/* Search Bar */}
@@ -224,24 +238,71 @@ const AppointmentsPage = () => {
 
       {error && <p className="error-msg">{error}</p>}
 
-    <h3>My Appointments</h3>
-      {appointments.length === 0 && <p className="my-app">No appointments booked yet.</p>} 
-      {appointments.map((a) => (
-        <div key={a.id} className="appointment-item">
-          <p><b>{a.provider.name}</b> ({a.provider.specialty})</p>
-          <p>Date: {a.date}, Time: {a.time}</p>
-          <p>Type: {a.type}</p>
-          <p>Reason: {a.reason}</p>
-          <p>Status: {a.status}</p>
-          <button
-            className="cancel-btn"
-            onClick={() => handleCancel(a.id)}
-            disabled={a.status === "Cancelled"}
-          >
-            Cancel
-          </button>
+     <h3>My Appointments</h3>
+{appointments.filter((a) => a.status !== "Cancelled").length === 0 && (
+  <p className="my-app">No appointments booked yet.</p>
+)}
+
+{appointments
+  .filter((a) => a.status !== "Cancelled") // ✅ Hide cancelled
+  .map((a) => (
+    <div key={a.id} className="appointment-item">
+      <p><b>{a.provider.name}</b> ({a.provider.specialty})</p>
+      <p>Date: {a.date}, Time: {a.time}</p>
+      <p>Type: {a.type}</p>
+      <p>Reason: {a.reason}</p>
+      <p>Status: {a.status}</p>
+
+      <button
+        className="cancel-btn"
+        onClick={() => handleCancel(a.id)}
+      >
+        Cancel
+      </button>
+    </div>
+  ))}
+   {/* footer */}
+      <footer className="footer">
+        <div className="footer-container">
+          <div className="footer-about">
+            <h3>HealthCare+ App</h3>
+            <p>
+              Your trusted partner in booking doctor appointments, tracking your
+              health, and staying informed. Together, let’s build a healthier tomorrow.
+            </p>
+          </div>
+
+          <div className="footer-links">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="/dashboard">🏠 Home</a></li>
+              <li><a href="/appointments">📅 Appointments</a></li>
+              <li><a href="/health-benefits">📖 Policies</a></li>
+              <li><a href="/profile">👤 My Profile</a></li>
+            </ul>
+          </div>
+
+          <div className="footer-social">
+            <h4>Follow Us</h4>
+            <div className="social-icons">
+              <a href="https://wa.me/1234567890" target="_blank" rel="noreferrer">💬 WhatsApp</a>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer">📘 Facebook</a>
+              <a href="https://t.me" target="_blank" rel="noreferrer">✈️ Telegram</a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer">💼 LinkedIn</a>
+            </div>
+          </div>
+
+          <div className="footer-contact">
+            <h4>Contact Us</h4>
+            <p>📍 Hyderabad, India</p>
+            <p>📞 +91 98765 43210</p>
+            <p>✉️ support@healthapp.com</p>
+          </div>
         </div>
-      ))}
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} HealthCare+ App. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };

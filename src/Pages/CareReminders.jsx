@@ -1,147 +1,206 @@
 import React, { useState, useEffect } from "react";
-import "./CareReminders.css";
-
-// Sample JSON data (can be fetched from backend)
-const remindersData = [
-  {
-    id: 1,
-    service: "Dental Checkup",
-    date: "2025-08-25",
-    time: "10:00 AM",
-    location: "City Dental Clinic",
-    status: "pending",
-  },
-  {
-    id: 2,
-    service: "Blood Test",
-    date: "2025-08-28",
-    time: "09:30 AM",
-    location: "Health Lab Center",
-    status: "pending",
-  },
-];
+import { useNotifications } from "../context/NotificationContext";
+import "./CareReminders.css"; // 👈 CSS file
 
 const CareReminders = () => {
-  const [preferences, setPreferences] = useState({
-    email: true,
-    sms: false,
-    push: true,
-  });
+  const { addNotification } = useNotifications();
 
-  const [reminders, setReminders] = useState(remindersData);
-  const [history, setHistory] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [reminders, setReminders] = useState([]);
+  const [selectedAppt, setSelectedAppt] = useState("");
+  const [reminderTime, setReminderTime] = useState("");
+  const [editingReminder, setEditingReminder] = useState(null); // ✅ track edit
 
-  // Handle preference toggle
-  const handlePreferenceChange = (type) => {
-    setPreferences((prev) => ({ ...prev, [type]: !prev[type] }));
-  };
-
-  // Snooze reminder (add 1 day)
-  const snoozeReminder = (id) => {
-    setReminders((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              date: new Date(
-                new Date(r.date).getTime() + 24 * 60 * 60 * 1000
-              )
-                .toISOString()
-                .split("T")[0],
-            }
-          : r
-      )
-    );
-  };
-
-  // Dismiss reminder
-  const dismissReminder = (id) => {
-    const reminder = reminders.find((r) => r.id === id);
-    setHistory((prev) => [...prev, { ...reminder, status: "dismissed" }]);
-    setReminders((prev) => prev.filter((r) => r.id !== id));
-  };
-
-  // Restore reminder from history
-  const restoreReminder = (id) => {
-    const reminder = history.find((r) => r.id === id);
-    setReminders((prev) => [...prev, { ...reminder, status: "pending" }]);
-    setHistory((prev) => prev.filter((r) => r.id !== id));
-  };
-
-  // Mock alert for upcoming reminders (1 day before)
+  // Load appointments + reminders
   useEffect(() => {
-    const today = new Date();
-    reminders.forEach((r) => {
-      const reminderDate = new Date(r.date);
-      const diffDays = Math.ceil(
-        (reminderDate - today) / (1000 * 60 * 60 * 24)
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser?.appointments) {
+      const confirmed = currentUser.appointments.filter(
+        (a) => a.status === "Confirmed"
       );
-      if (diffDays === 1) {
-        if (preferences.email)
-          alert(`Email Reminder: ${r.service} tomorrow at ${r.time}`);
-        if (preferences.sms)
-          alert(`SMS Reminder: ${r.service} tomorrow at ${r.time}`);
-        if (preferences.push)
-          alert(`Push Reminder: ${r.service} tomorrow at ${r.time}`);
-      }
-    });
-  }, [reminders, preferences]);
+      setAppointments(confirmed);
+    }
+
+    const savedReminders = JSON.parse(localStorage.getItem("reminders")) || [];
+    setReminders(savedReminders);
+  }, []);
+
+  // Save reminders
+  useEffect(() => {
+    localStorage.setItem("reminders", JSON.stringify(reminders));
+  }, [reminders]);
+
+  // Schedule reminder
+  const scheduleReminder = (reminder) => {
+    const reminderDateTime = new Date(reminder.reminderAt);
+    const now = new Date();
+    const delay = reminderDateTime.getTime() - now.getTime();
+
+    if (delay > 0) {
+      setTimeout(() => {
+        addNotification(`⏰ Reminder: ${reminder.title} at ${reminder.appointmentTime}`);
+        alert(`⏰ Reminder: ${reminder.title} at ${reminder.appointmentTime}`);
+
+        setReminders((prev) =>
+          prev.map((rem) =>
+            rem.id === reminder.id ? { ...rem, notified: true } : rem
+          )
+        );
+      }, delay);
+    }
+  };
+
+  useEffect(() => {
+    reminders.filter((r) => !r.notified).forEach(scheduleReminder);
+    // eslint-disable-next-line
+  }, [reminders]);
+
+  // Add new or update reminder
+  const handleSaveReminder = () => {
+    if (!selectedAppt || !reminderTime) {
+      alert("⚠️ Select appointment & time");
+      return;
+    }
+
+    const appt = appointments.find((a) => String(a.id) === String(selectedAppt));
+    if (!appt) {
+      alert("⚠️ Appointment not found.");
+      return;
+    }
+
+    if (editingReminder) {
+      // ✅ Update
+      const updated = reminders.map((r) =>
+        r.id === editingReminder.id
+          ? { ...r, reminderAt: reminderTime, notified: false }
+          : r
+      );
+      setReminders(updated);
+      setEditingReminder(null);
+    } else {
+      // ✅ Add new
+      const newReminder = {
+        id: Date.now(),
+        title: `Reminder for ${appt.provider.name}`,
+        appointmentTime: `${appt.date} ${appt.time}`,
+        reminderAt: reminderTime,
+        notified: false,
+      };
+      setReminders((prev) => [...prev, newReminder]);
+      scheduleReminder(newReminder);
+    }
+
+    setSelectedAppt("");
+    setReminderTime("");
+  };
+
+  // Delete reminder
+  const deleteReminder = (id) => {
+    setReminders(reminders.filter((r) => r.id !== id));
+  };
+
+  // Edit reminder
+  const editReminder = (reminder) => {
+    setEditingReminder(reminder);
+    setSelectedAppt(appointments.find((a) => `${a.provider.name}` === reminder.title.split("Reminder for ")[1])?.id || "");
+    setReminderTime(reminder.reminderAt);
+  };
 
   return (
-    <div className="care-reminders">
+    <div>
+    <div className="care-container">
       <h1>Care Reminders</h1>
 
-      {/* Preferences Section */}
-      <div className="preferences">
-        <h2>Notification Preferences</h2>
-        {["email", "sms", "push"].map((type) => (
-          <label key={type}>
-            <input
-              type="checkbox"
-              checked={preferences[type]}
-              onChange={() => handlePreferenceChange(type)}
-            />
-            {type.toUpperCase()}
-          </label>
-        ))}
+      {/* Form */}
+      <div className="reminder-form">
+        <select
+          value={selectedAppt}
+          onChange={(e) => setSelectedAppt(e.target.value)}
+        >
+          <option value="">-- Select Appointment --</option>
+          {appointments.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.provider.name} on {a.date} at {a.time}
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="datetime-local"
+          value={reminderTime}
+          onChange={(e) => setReminderTime(e.target.value)}
+        />
+
+        <button onClick={handleSaveReminder}>
+          {editingReminder ? "Update Reminder" : "Add Reminder"}
+        </button>
       </div>
 
-      {/* Upcoming Reminders */}
-      <div className="reminders-list">
-        <h2>Upcoming Reminders</h2>
-        {reminders.length === 0 && <p>No upcoming reminders!</p>}
-        {reminders
-          .sort((a, b) => new Date(a.date) - new Date(b.date))
-          .map((r) => (
-            <div key={r.id} className="reminder-card">
-              <p>
-                <strong>{r.service}</strong> on {r.date} at {r.time} (
-                {r.location})
-              </p>
-              <div className="actions">
-                <button onClick={() => snoozeReminder(r.id)}>Snooze 1 day</button>
-                <button onClick={() => dismissReminder(r.id)}>Dismiss</button>
+      {/* List */}
+      <h3>Upcoming Reminders</h3>
+      {reminders.length === 0 ? (
+        <p>No reminders set.</p>
+      ) : (
+        <ul className="reminder-list">
+          {reminders.map((r) => (
+            <li key={r.id} className="reminder-item">
+              <div>
+                <strong>{r.title}</strong> →{" "}
+                {new Date(r.reminderAt).toLocaleString()}
+                {r.notified && <span className="done"> ✅ (Notified)</span>}
               </div>
-            </div>
+              <div className="actions">
+                <button onClick={() => editReminder(r)}>✏️ Edit</button>
+                <button onClick={() => deleteReminder(r)}>🗑️ Delete</button>
+              </div>
+            </li>
           ))}
-      </div>
+        </ul>
+      )}
+       
+    </div>
+    {/* footer */}
+      <footer className="footer">
+        <div className="footer-container">
+          <div className="footer-about">
+            <h3>HealthCare+ App</h3>
+            <p>
+              Your trusted partner in booking doctor appointments, tracking your
+              health, and staying informed. Together, let’s build a healthier tomorrow.
+            </p>
+          </div>
 
-      {/* Reminder History */}
-      <div className="reminder-history">
-        <h2>Reminder History</h2>
-        {history.length === 0 && <p>No past reminders yet.</p>}
-        {history
-          .sort((a, b) => new Date(a.date) - new Date(b.date))
-          .map((r) => (
-            <div key={r.id} className="history-card">
-              <p>
-                <strong>{r.service}</strong> on {r.date} at {r.time} (
-                {r.location}) - <em>{r.status}</em>
-              </p>
-              <button onClick={() => restoreReminder(r.id)}>Restore</button>
+          <div className="footer-links">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="/dashboard">🏠 Home</a></li>
+              <li><a href="/appointments">📅 Appointments</a></li>
+              <li><a href="/health-benefits">📖 Policies</a></li>
+              <li><a href="/profile">👤 My Profile</a></li>
+            </ul>
+          </div>
+
+          <div className="footer-social">
+            <h4>Follow Us</h4>
+            <div className="social-icons">
+              <a href="https://wa.me/1234567890" target="_blank" rel="noreferrer">💬 WhatsApp</a>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer">📘 Facebook</a>
+              <a href="https://t.me" target="_blank" rel="noreferrer">✈️ Telegram</a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer">💼 LinkedIn</a>
             </div>
-          ))}
-      </div>
+          </div>
+
+          <div className="footer-contact">
+            <h4>Contact Us</h4>
+            <p>📍 Hyderabad, India</p>
+            <p>📞 +91 98765 43210</p>
+            <p>✉️ support@healthapp.com</p>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>© {new Date().getFullYear()} HealthCare+ App. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };

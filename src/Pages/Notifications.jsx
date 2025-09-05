@@ -1,34 +1,30 @@
-import React from 'react';
-import './Notifications.css';
-
-const mockNotifications = [
-  {
-    id: 1,
-    title: 'New Appointment Confirmation',
-    message: 'Your appointment with Dr. Sharma is confirmed for Aug 5.',
-    date: '2025-07-28'
-  },
-  {
-    id: 2,
-    title: 'Policy Update',
-    message: 'Your health insurance policy was updated successfully.',
-    date: '2025-07-25'
-  }
-];
+import React, { useContext, useEffect } from "react";
+import { NotificationContext } from "../context/NotificationContext";
 
 const Notifications = () => {
+  const { notifications, markAllRead } = useContext(NotificationContext);
+
+  // 👉 Run once when the page mounts
+  useEffect(() => {
+    markAllRead();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <div className="notifications-container">
-      <h2>Notifications</h2>
-      <div className="notifications-list">
-        {mockNotifications.map((n) => (
-          <div key={n.id} className="notification-card">
-            <h4>{n.title}</h4>
-            <p>{n.message}</p>
-            <span>{n.date}</span>
-          </div>
-        ))}
-      </div>
+    <div>
+      <h1>Notifications</h1>
+
+      {notifications.length === 0 ? (
+        <p>No notifications yet!</p>
+      ) : (
+        <ul>
+          {notifications.map((n) => (
+            <li key={n.id} style={{ fontWeight: n.read ? "normal" : "bold" }}>
+              {n.message} - {new Date(n.createdAt).toLocaleString()}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

@@ -1,30 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Sidebar.module.css";
-import logo from "../assets/Healthassit-removebg-preview.png"; 
+import logo from "../assets/Healthassit-removebg-preview.png";
 import { FaBell, FaSun, FaMoon } from "react-icons/fa";
+import { NotificationContext } from "../context/NotificationContext";
 
 const Header = () => {
   const location = useLocation();
+  const { notifications } = useContext(NotificationContext);
 
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  // 🔢 Count unread notifications
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
-  useEffect(() => {
+  const [theme, setTheme] = React.useState(
+    localStorage.getItem("theme") || "light"
+  );
+
+  React.useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = () =>
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
 
   const navItems = [
     { to: "/dashboard", label: "Dashboard" },
     { to: "/health-benefits", label: "Health Benefits" },
     { to: "/appointments", label: "Appointments" },
     { to: "/care-reminders", label: "Care Reminders" },
-     { to: "/Login", label: "Logout" },
-   
+    { to: "/notifications", label: "Notifications" },
+    { to: "/login", label: "Logout" },
   ];
 
   return (
@@ -49,10 +55,17 @@ const Header = () => {
             </li>
           ))}
 
+          {/* 🔔 Bell with Badge */}
           <li className={styles.iconButton}>
-            <FaBell />
+            <Link to="/notifications" className={styles.bellWrap}>
+              <FaBell />
+              {unreadCount > 0 && (
+                <span className={styles.badge}>{unreadCount}</span>
+              )}
+            </Link>
           </li>
 
+          {/* 🌗 Theme Toggle */}
           <li className={styles.iconButton} onClick={toggleTheme}>
             {theme === "light" ? <FaMoon /> : <FaSun />}
           </li>
